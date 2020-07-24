@@ -5,8 +5,8 @@ require_relative 'lib/solidus_feeds/version'
 Gem::Specification.new do |spec|
   spec.name = 'solidus_feeds'
   spec.version = SolidusFeeds::VERSION
-  spec.authors = ['Elia Schito']
-  spec.email = 'elia@schito.me'
+  spec.authors = ['Elia Schito', 'Nicolò Rebughini']
+  spec.email = 'contact@solidus.io'
 
   spec.summary = 'A framework for producing and publishing feeds on Solidus.'
   spec.homepage = 'https://github.com/elia/solidus_feeds#readme'
