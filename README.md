@@ -1,6 +1,6 @@
 # SolidusFeeds
 
-[Explain what your extension does.] 
+A framework for producing and publishing feeds on Solidus.
 
 ## Installation
 
