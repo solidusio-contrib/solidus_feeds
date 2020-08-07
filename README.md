@@ -19,7 +19,67 @@ bundle exec rails g solidus_feeds:install
 
 ## Usage
 
-[Explain how to use your extension once it's been installed.]
+⚠️ *This is work in progress, once done the following is expected to be the final interface* ⚠️
+
+Define and publish your own feeds
+
+```ruby
+# initializer/spree.rb
+
+SolidusFeeds.register_feed :google_merchant_shoes do |feed|
+  taxon = Spree::Taxon.find_by(name: "Shoes")
+  products = Spree::Product.available.in_taxon(taxon)
+
+  feed.publisher = SolidusFeeds::S3Publisher.new(credentials: …,filename: …)
+  feed.generator = SolidusFeeds::GoogleMerchantXMLGenerator.new(products)
+end
+```
+
+Both the generator and the publisher are expected to respond to `#call`.
+The publisher's `#call` method is expected to yield an IO-like object that responds to `#<<`.
+
+### Serving the feed from the products controller (legacy)
+
+Support the legacy behavior of `solidus_product_feed` by prepending the product controller decorator.
+
+```ruby
+# initializer/spree.rb
+
+Rails.application.config.to_prepare {
+  ::Spree::ProductsController.prepend SolidusProductFeed::Spree::ProductsControllerDecorator
+}
+```
+
+### Serving the feed from an external object storage
+
+Define a background job for your feed
+
+```ruby
+class FeedPublishingJob < ApplicationJob
+  def perform(feed_name)
+    SolidusFeeds.publish(feed_name)
+  end
+end
+```
+
+And then periodically run it to keep the data fresh
+
+1. Manually from the backend dashboard
+2. With cron or other scheduling mechanism provided by the server (e.g. Heroku scheduler)
+3. With a webhook
+4. After specific solidus events
+
+### Publishing backends
+
+- S3
+- ActiveStorage
+- Rails cache
+- Static file
+- FTP
+
+### Builtin Generators
+
+- GoogleMerchantXML (also works for Facebook and Instagram)
 
 ## Development
 
