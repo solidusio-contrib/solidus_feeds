@@ -7,3 +7,5 @@ require 'solidus_feeds/version'
 require 'solidus_feeds/feed'
 require 'solidus_feeds/feeds'
 require 'solidus_feeds/engine'
+
+require 'solidus_feeds/publishers/s3'

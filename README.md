@@ -77,11 +77,36 @@ And then periodically run it to keep the data fresh
 
 ### Publishing backends
 
-- S3
-- ActiveStorage
-- Rails cache
-- Static file
-- FTP
+#### S3
+
+Configuration, inside an initializer:
+
+```ruby
+Aws.config[:profile] = 'my-profile'
+s3 = SolidusFeeds::Publishers::S3.new(object_key: "foo/bar.txt", bucket: "my-bucket")
+```
+
+```ruby
+Aws.config[:profile] = 'my-profile'
+s3 = SolidusFeeds::Publishers::S3.new(object_key: "foo/bar.txt", bucket: "my-bucket", client: Aws::S3::Client.new(…)) # see docs
+```
+
+```ruby
+SolidusFeeds.register :all_products do |feed|
+  feed.generator = SolidusFeeds::Generators::GoogleMerchant.new(Spree::Product.all)
+  feed.publisher = SolidusFeeds::Puslishers::S3.new(
+    bucket: "foo",
+    object_key: "bar/my_feed.xml"
+  )
+
+  # visit https://s3.us-east-1.amazonaws.com/foo/bar/my_feed.xml
+end
+```
+
+#### ActiveStorage
+#### Rails cache
+#### Static file
+#### FTP
 
 ### Builtin Generators
 
