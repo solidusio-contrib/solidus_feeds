@@ -3,3 +3,10 @@ require:
 
 AllCops:
   NewCops: disable
+
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: false

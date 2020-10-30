@@ -3,17 +3,16 @@ require 'stringio'
 require 'csv'
 
 RSpec.describe SolidusFeeds::Feeds do
-  subject(:solidus_feeds) do
-    Class.new.tap { |klass| klass.extend described_class }
-  end
+  subject(:solidus_feeds) { Class.new.tap { |klass| klass.extend described_class } }
+
   let(:io) { StringIO.new }
-  let(:publisher) { -> &block { block.call(io) } }
+  let(:publisher) { ->(&block) { block.call(io) } }
   let(:generator) {
-     -> io {
-       csv = CSV.new(io)
-       csv << ["some", "data"]
-       csv << ["another", "line"]
-     }
+    ->(io) {
+      csv = CSV.new(io)
+      csv << ["some", "data"]
+      csv << ["another", "line"]
+    }
   }
 
   it 'allows to register, generate, and publish feeds' do
@@ -23,9 +22,9 @@ RSpec.describe SolidusFeeds::Feeds do
     end
 
     feed = solidus_feeds.find(:foo)
-    expect(feed).to be_a SolidusFeeds::Feed
-
     feed.publish
+
+    expect(feed).to be_a SolidusFeeds::Feed
     expect(io.string).to eq("some,data\nanother,line\n")
   end
 end

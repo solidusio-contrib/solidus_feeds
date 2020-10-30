@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SolidusFeeds::Feed
   attr_accessor :generator, :publisher
 

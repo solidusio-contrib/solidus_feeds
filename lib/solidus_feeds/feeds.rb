@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 module SolidusFeeds::Feeds
   def feeds
     @feeds ||= {}
   end
 
-  def register name, &block
+  def register(name, &block)
     feeds[name] = block
   end
 
