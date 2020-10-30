@@ -9,7 +9,7 @@ module SolidusFeeds
     # attr_accessor :my_setting
 
     def register(name, &builder)
-      feeds[name.to_sym] = Feed.new.tap(&builder)
+      feeds[name.to_sym] = Feed.new(&builder)
     end
 
     def find(name)
