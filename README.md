@@ -31,7 +31,7 @@ Define and publish your own feeds
 ```ruby
 # initializer/spree.rb
 
-SolidusFeeds.register :google_merchant_shoes do |feed|
+SolidusFeeds.config.register :google_merchant_shoes do |feed|
   taxon = Spree::Taxon.find_by(name: "Shoes")
   products = Spree::Product.available.in_taxon(taxon)
 
@@ -46,7 +46,7 @@ The publisher's `#call` method is expected to yield an IO-like object that respo
 At this point the feed can be generated and published using:
 
 ```ruby
-SolidusFeeds.find(:google_merchant_shoes).publish
+SolidusFeeds.config.find(:google_merchant_shoes).publish
 ```
 
 ### Serving the feed from the products controller (legacy)
