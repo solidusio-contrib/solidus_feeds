@@ -1,2 +1,12 @@
 require:
   - solidus_dev_support/rubocop
+
+AllCops:
+  NewCops: disable
+
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: false

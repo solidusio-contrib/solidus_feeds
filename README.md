@@ -1,5 +1,9 @@
-# SolidusFeeds
+# Solidus Feeds
 
+[![CircleCI](https://circleci.com/gh/nebulab/solidus_feeds.svg?style=shield)](https://circleci.com/gh/nebulab/solidus_feeds)
+[![codecov](https://codecov.io/gh/nebulab/solidus_feeds/branch/master/graph/badge.svg)](https://codecov.io/gh/nebulab/solidus_feeds)
+
+<!-- Explain what your extension does. -->
 A framework for producing and publishing feeds on Solidus.
 
 ## Installation
@@ -13,11 +17,12 @@ gem 'solidus_feeds'
 Bundle your dependencies and run the installation generator:
 
 ```shell
-bundle
-bundle exec rails g solidus_feeds:install
+bin/rails generate solidus_feeds:install
 ```
 
 ## Usage
+
+<!-- Explain how to use your extension once it's been installed. -->
 
 ⚠️ *This is work in progress, once done the following is expected to be the final interface* ⚠️
 
@@ -26,7 +31,7 @@ Define and publish your own feeds
 ```ruby
 # initializer/spree.rb
 
-SolidusFeeds.register :google_merchant_shoes do |feed|
+SolidusFeeds.config.register :google_merchant_shoes do |feed|
   taxon = Spree::Taxon.find_by(name: "Shoes")
   products = Spree::Product.available.in_taxon(taxon)
 
@@ -41,7 +46,7 @@ The publisher's `#call` method is expected to yield an IO-like object that respo
 At this point the feed can be generated and published using:
 
 ```ruby
-SolidusFeeds.find(:google_merchant_shoes).publish
+SolidusFeeds.config.find(:google_merchant_shoes).publish
 ```
 
 ### Serving the feed from the products controller (legacy)
@@ -121,7 +126,6 @@ app if it does not exist, then it will run specs. The dummy app can be regenerat
 `bin/rake extension:test_app`.
 
 ```shell
-bundle
 bin/rake
 ```
 
@@ -146,7 +150,7 @@ the sandbox app is `./sandbox` and `bin/rails` will forward any Rails commands t
 
 Here's an example:
 
-```shell
+```
 $ bin/rails server
 => Booting Puma
 => Rails 6.0.2.1 application starting in development
@@ -154,13 +158,20 @@ $ bin/rails server
 Use Ctrl-C to stop
 ```
 
-### Releasing new versions
+### Updating the changelog
 
-Your new extension version can be released using `gem-release` like this:
+Before and after releases the changelog should be updated to reflect the up-to-date status of
+the project:
 
 ```shell
-bundle exec gem bump -v VERSION --tag --push --remote upstream && gem release
+bin/rake changelog
+git add CHANGELOG.md
+git commit -m "Update the changelog"
 ```
+
+### Releasing new versions
+
+Please refer to the dedicated [page](https://github.com/solidusio/solidus/wiki/How-to-release-extensions) on Solidus wiki.
 
 ## License
 
