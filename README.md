@@ -20,102 +20,132 @@ Bundle your dependencies and run the installation generator:
 bin/rails generate solidus_feeds:install
 ```
 
-## Usage
+## Out of the box usage
 
 <!-- Explain how to use your extension once it's been installed. -->
 
-⚠️ *This is work in progress, once done the following is expected to be the final interface* ⚠️
+Let's say that you want to generate a XML feed for products belonging to the `Shoes` taxon,
+consumable by Google Merchant compatible marketplaces  and make it publicly available on your
+`my-bucket` S3 bucket at the path `foo/bar.xml`.
 
-Define and publish your own feeds
+To register the feed you'd need to add the following code to an initializer such as
+`config/initializers/solidus.rb` or better yet `config/initializers/solidus_feeds.rb`
 
 ```ruby
-# initializer/spree.rb
-
 SolidusFeeds.config.register :google_merchant_shoes do |feed|
   taxon = Spree::Taxon.find_by(name: "Shoes")
   products = Spree::Product.available.in_taxon(taxon)
 
-  feed.publisher = SolidusFeeds::S3Publisher.new(credentials: …,filename: …)
-  feed.generator = SolidusFeeds::GoogleMerchantXMLGenerator.new(products)
+  feed.generator = SolidusFeeds::Generators::GoogleMerchant.new(products)
+  feed.publisher = SolidusFeeds::Publishers::S3.new(bucket: "my-bucket", object_key: "foo/bar.xml")
 end
 ```
 
-Both the generator and the publisher are expected to respond to `#call`.
-The publisher's `#call` method is expected to yield an IO-like object that responds to `#<<`.
-
-At this point the feed can be generated and published using:
+Then make your Solidus app generate and publish the feed by calling the following line. It's
+recommended to call it in a background job, especially when generating feeds with large amounts of
+products.
 
 ```ruby
-SolidusFeeds.config.find(:google_merchant_shoes).publish
+SolidusFeeds.find(:google_merchant_shoes).publish
 ```
 
-### Serving the feed from the products controller (legacy)
+Having it in a background job makes it easier to:
 
-Support the legacy behavior of `solidus_product_feed` by prepending the product controller decorator.
+- Launch it manually from the backend dashboard
+- Make it refresh periodically via cron, sidekiq-scheduler, Heroku scheduler or similar
+- Refresh the feed when receiving data from a [webhook](https://github.com/solidusio-contrib/solidus_webhooks)
+  or after specific Solidus events
+
+## Serving the feed from the products controller (legacy)
+
+Support the legacy behavior of [`solidus_product_feed`](https://github.com/solidusio-contrib/solidus_product_feed)
+by prepending the product controller decorator.
 
 ```ruby
-# initializer/spree.rb
+# config/initializers/spree.rb
 
 Rails.application.config.to_prepare {
   ::Spree::ProductsController.prepend SolidusProductFeed::Spree::ProductsControllerDecorator
 }
 ```
 
-### Serving the feed from an external object storage
+## Publishing backends
 
-Define a background job for your feed
+### S3
 
-```ruby
-class FeedPublishingJob < ApplicationJob
-  def perform(feed_name)
-    SolidusFeeds.publish(feed_name)
-  end
-end
-```
-
-And then periodically run it to keep the data fresh
-
-1. Manually from the backend dashboard
-2. With cron or other scheduling mechanism provided by the server (e.g. Heroku scheduler)
-3. With a webhook
-4. After specific solidus events
-
-### Publishing backends
-
-#### S3
-
-Configuration, inside an initializer:
+If you don't want to configure a S3 `client` each time, you can load your AWS config in an
+initializer:
 
 ```ruby
+# config/initializers/aws.rb
+
 Aws.config[:profile] = 'my-profile'
-s3 = SolidusFeeds::Publishers::S3.new(object_key: "foo/bar.txt", bucket: "my-bucket")
 ```
 
-```ruby
-Aws.config[:profile] = 'my-profile'
-s3 = SolidusFeeds::Publishers::S3.new(object_key: "foo/bar.txt", bucket: "my-bucket", client: Aws::S3::Client.new(…)) # see docs
-```
+Then config your S3 publisher specifying the `bucket`, `object_key` and an optional `client` if you
+need custom configuration on a per-publisher basis.
 
 ```ruby
-SolidusFeeds.register :all_products do |feed|
+# config/initializers/solidus_feeds.rb
+
+SolidusFeeds.config.register :all_products do |feed|
   feed.generator = SolidusFeeds::Generators::GoogleMerchant.new(Spree::Product.all)
   feed.publisher = SolidusFeeds::Puslishers::S3.new(
     bucket: "foo",
-    object_key: "bar/my_feed.xml"
+    object_key: "bar/my_feed.xml",
+    client: Aws::S3::Client.new(…), # This is optional - use only if a custom config is needed
   )
 
   # visit https://s3.us-east-1.amazonaws.com/foo/bar/my_feed.xml
 end
 ```
 
-#### ActiveStorage
-#### Rails cache
-#### Static file
-#### FTP
+### ActiveStorage
+### Rails cache
+### Static file
+### FTP
 
-### Builtin Generators
+## Builtin Marketplace format generators
 
-- GoogleMerchantXML (also works for Facebook and Instagram)
+- Google Merchant
+- Facebook and Instagram (work in progress)
+- Amazon (work in progress)
+
+## Creating your own Generators and Publishers
+
+Both the generator and the publisher are expected to respond to `#call`.
+
+The publisher's `#call` method is expected to yield an IO-like object that responds to `#<<`.
+
+### Example
+
+For example a simple feed that will publish recently added products to Rails' public folder in JSON
+format would look like this:
+
+```ruby
+class FilePublisher < Struct.new(:path)
+  def call
+    File.open(path, 'w') do |file|
+      yield file
+    end
+  end
+end
+
+class JsonProductFeed < Struct.new(:products)
+  def call(io)
+    products.find_each do |product|
+      io << product.to_json
+    end
+  end
+end
+
+SolidusFeeds.register :recent_products do |feed|
+  recent_products = Spree::Product.where(created_at: Time.now..2.weeks.ago)
+
+  feed.generator = JsonProductFeed.new(recent_products)
+  feed.publisher = FilePublisher.new(Rails.root.join("public/product.json")
+end
+```
 
 ## Development
 
