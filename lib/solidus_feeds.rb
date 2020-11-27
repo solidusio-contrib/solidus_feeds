@@ -8,3 +8,5 @@ require 'solidus_feeds/version'
 require 'solidus_feeds/engine'
 
 require 'solidus_feeds/publishers/s3'
+
+require 'solidus_feeds/generators/google_merchant'

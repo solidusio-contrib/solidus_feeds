@@ -24,6 +24,8 @@ module SolidusFeeds
   end
 
   class << self
+    attr_writer :title, :link, :description, :language
+
     def configuration
       @configuration ||= Configuration.new
     end
@@ -36,6 +38,22 @@ module SolidusFeeds
 
     def configure
       yield configuration
+    end
+
+    def title
+      @title ||= Spree::Store.default.name
+    end
+
+    def link
+      @link ||= "https://#{Spree::Store.default.url}"
+    end
+
+    def description
+      @description ||= "Find out about new products on https://#{Spree::Store.default.url} first!"
+    end
+
+    def language
+      @language ||= 'en-us'
     end
   end
 end
