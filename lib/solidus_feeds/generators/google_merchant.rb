@@ -64,7 +64,7 @@ module SolidusFeeds
         return unless product.images.any?
 
         attachment_url = product.images.first.attachment.url(:large)
-        asset_host = ActionController::Base.asset_host
+        asset_host = ActionController::Base.asset_host || host
 
         URI.join(asset_host, attachment_url).to_s
       end
