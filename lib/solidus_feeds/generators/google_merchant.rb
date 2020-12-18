@@ -75,7 +75,7 @@ module SolidusFeeds
       end
 
       def price(product)
-        Spree::Money.new(product.price).money.format(symbol: false, with_currency: true)
+        ::Spree::Money.new(product.price).money.format(symbol: false, with_currency: true)
       end
 
       # Must be "in stock", "preorder" or "out of stock"
@@ -99,7 +99,7 @@ module SolidusFeeds
       private
 
       def spree_routes
-        @spree_routes ||= Spree::Core::Engine.routes.url_helpers
+        @spree_routes ||= ::Spree::Core::Engine.routes.url_helpers
       end
     end
   end
