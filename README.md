@@ -109,7 +109,6 @@ end
 
 - Google Merchant
 - Facebook and Instagram (work in progress)
-- Amazon (work in progress)
 
 ## Creating your own Generators and Publishers
 
