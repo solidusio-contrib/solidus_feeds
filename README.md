@@ -58,15 +58,44 @@ Having it in a background job makes it easier to:
 
 ## Serving the feed from the products controller (legacy)
 
-Support the legacy behavior of [`solidus_product_feed`](https://github.com/solidusio-contrib/solidus_product_feed)
-by prepending the product controller decorator.
+We suggest to avoid this behaviour because it could be resource intensive, especially with a large
+number of products.
+
+If you want to support the legacy behaviour of [`solidus_product_feed`](https://github.com/solidusio-contrib/solidus_product_feed)
+and publish a XML feed at `/products.rss`, you can add the following decorator:
 
 ```ruby
-# config/initializers/spree.rb
+# app/decorators/controllers/solidus_feeds/spree/products_controller.rb
 
-Rails.application.config.to_prepare {
-  ::Spree::ProductsController.prepend SolidusProductFeed::Spree::ProductsControllerDecorator
-}
+module SolidusFeeds
+  module Spree
+    module ProductsControllerDecorator
+      def self.prepended(klass)
+        klass.respond_to :rss, only: :index
+        klass.before_action :verify_requested_format!, only: :index
+      end
+
+      def index
+        render as: :xml, body: load_feed_products if request.format.rss?
+        super
+      end
+
+      private
+
+      def load_feed_products
+        @products = ::Spree::Product.all
+        io = StringIO.new
+        SolidusFeeds::Generators::GoogleMerchant
+          .new(@products, host: 'https://example.com')
+          .call(io)
+        io.rewind
+        io.read
+      end
+
+      ::Spree::ProductsController.prepend self
+    end
+  end
+end
 ```
 
 ## Publishing backends
