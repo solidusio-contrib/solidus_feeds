@@ -41,15 +41,15 @@ module SolidusFeeds
     end
 
     def title
-      @title ||= Spree::Store.default.name
+      @title ||= ::Spree::Store.default.name
     end
 
     def link
-      @link ||= "https://#{Spree::Store.default.url}"
+      @link ||= "https://#{::Spree::Store.default.url}"
     end
 
     def description
-      @description ||= "Find out about new products on https://#{Spree::Store.default.url} first!"
+      @description ||= "Find out about new products on https://#{::Spree::Store.default.url} first!"
     end
 
     def language

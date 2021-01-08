@@ -64,7 +64,7 @@ module SolidusFeeds
         return unless product.images.any?
 
         attachment_url = product.images.first.attachment.url(:large)
-        asset_host = ActionController::Base.asset_host
+        asset_host = ActionController::Base.asset_host || host
 
         URI.join(asset_host, attachment_url).to_s
       end
@@ -75,7 +75,7 @@ module SolidusFeeds
       end
 
       def price(product)
-        Spree::Money.new(product.price).money.format(symbol: false, with_currency: true)
+        ::Spree::Money.new(product.price).money.format(symbol: false, with_currency: true)
       end
 
       # Must be "in stock", "preorder" or "out of stock"
@@ -99,7 +99,7 @@ module SolidusFeeds
       private
 
       def spree_routes
-        @spree_routes ||= Spree::Core::Engine.routes.url_helpers
+        @spree_routes ||= ::Spree::Core::Engine.routes.url_helpers
       end
     end
   end
