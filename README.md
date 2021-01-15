@@ -119,7 +119,7 @@ need custom configuration on a per-publisher basis.
 
 SolidusFeeds.config.register :all_products do |feed|
   feed.generator = SolidusFeeds::Generators::GoogleMerchant.new(Spree::Product.all)
-  feed.publisher = SolidusFeeds::Puslishers::S3.new(
+  feed.publisher = SolidusFeeds::Publishers::S3.new(
     bucket: "foo",
     object_key: "bar/my_feed.xml",
     client: Aws::S3::Client.new(…), # This is optional - use only if a custom config is needed
@@ -131,7 +131,23 @@ end
 
 ### ActiveStorage
 ### Rails cache
+
 ### Static file
+
+To publish the feed directly from an app directory (e.g. the `public` directory), you can use the
+Static File Publisher as such:
+
+```ruby
+# config/initializers/solidus_feeds.rb
+
+SolidusFeeds.config.register :all_products do |feed|
+  feed.generator = SolidusFeeds::Generators::GoogleMerchant.new(Spree::Product.all)
+  feed.publisher = SolidusFeeds::Publishers::StaticFile.new(
+    path: Rails.root.join('public/products.xml')
+  )
+end
+```
+
 ### FTP
 
 ## Builtin Marketplace format generators
