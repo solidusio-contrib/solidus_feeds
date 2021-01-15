@@ -129,9 +129,6 @@ SolidusFeeds.config.register :all_products do |feed|
 end
 ```
 
-### ActiveStorage
-### Rails cache
-
 ### Static file
 
 To publish the feed directly from an app directory (e.g. the `public` directory), you can use the
@@ -147,8 +144,6 @@ SolidusFeeds.config.register :all_products do |feed|
   )
 end
 ```
-
-### FTP
 
 ## Builtin Marketplace format generators
 
