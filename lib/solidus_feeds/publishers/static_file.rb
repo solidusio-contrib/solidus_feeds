@@ -9,10 +9,8 @@ module SolidusFeeds
         @path = path
       end
 
-      def call
-        File.open(path, 'w') do |file|
-          yield file
-        end
+      def call(&block)
+        File.open(path, 'w', &block)
       end
     end
   end
