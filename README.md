@@ -1,7 +1,7 @@
 # Solidus Feeds
 
-[![CircleCI](https://circleci.com/gh/nebulab/solidus_feeds.svg?style=shield)](https://circleci.com/gh/nebulab/solidus_feeds)
-[![codecov](https://codecov.io/gh/nebulab/solidus_feeds/branch/master/graph/badge.svg)](https://codecov.io/gh/nebulab/solidus_feeds)
+[![CircleCI](https://circleci.com/gh/solidusio-contrib/solidus_feeds.svg?style=shield)](https://circleci.com/gh/solidusio-contrib/solidus_feeds)
+[![codecov](https://codecov.io/gh/solidusio-contrib/solidus_feeds/branch/master/graph/badge.svg)](https://codecov.io/gh/solidusio-contrib/solidus_feeds)
 
 <!-- Explain what your extension does. -->
 A framework for producing and publishing feeds on Solidus.
@@ -243,4 +243,4 @@ Please refer to the dedicated [page](https://github.com/solidusio/solidus/wiki/H
 
 ## License
 
-Copyright (c) 2020 [name of extension author], released under the New BSD License.
+Copyright (c) 2021 Nebulab SRLs, released under the New BSD License.
