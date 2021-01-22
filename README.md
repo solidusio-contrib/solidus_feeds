@@ -147,8 +147,7 @@ end
 
 ## Builtin Marketplace format generators
 
-- Google Merchant
-- Facebook and Instagram (work in progress)
+- Google Merchant XML: compatible with Google Merchant and Facebook/Instagram feeds
 
 ## Creating your own Generators and Publishers
 
