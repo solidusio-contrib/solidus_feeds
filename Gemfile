@@ -10,7 +10,11 @@ solidus_git, solidus_frontend_git = if (branch == 'main') || (branch >= 'v3.2')
                                       %w[solidusio/solidus] * 2
                                     end
 gem 'solidus', github: solidus_git, branch: branch
-gem 'solidus_frontend', github: solidus_frontend_git, branch: branch
+if branch <= 'v4.0'
+  gem 'solidus_frontend', github: solidus_frontend_git, branch: branch
+else
+  gem 'solidus_frontend', github: solidus_frontend_git, branch: 'v4.0'
+end
 
 # Needed to help Bundler figure out how to resolve dependencies,
 # otherwise it takes forever to resolve them.
