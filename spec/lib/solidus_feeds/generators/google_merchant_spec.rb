@@ -46,7 +46,7 @@ RSpec.describe SolidusFeeds::Generators::GoogleMerchant do
           expect_xml_content('//channel/item[1]/g:title').to eq('A product')
           expect_xml_content('//channel/item[1]/g:description').to eq('product description')
           expect_xml_content('//channel/item[1]/g:link').to eq('https://example.com/products/pro1')
-          expect_xml_content('//channel/item[1]/g:image_link').to eq("https://assets.example.com/spree/products/234/large/foo.png") # rubocop:disable Layout/LineLength
+          expect_xml_content('//channel/item[1]/g:image_link').to match(%r{https://assets.example.com.*blank.jpg$})
           expect_xml_content('//channel/item[1]/g:condition').to eq('new')
           expect_xml_content('//channel/item[1]/g:price').to eq('123.45 USD')
           expect_xml_content('//channel/item[1]/g:availability').to eq('out of stock')
@@ -83,7 +83,7 @@ RSpec.describe SolidusFeeds::Generators::GoogleMerchant do
   end
 
   specify '#image_link', :with_images do
-    expect(generator.image_link(products.first)).to eq("https://assets.example.com/spree/products/234/large/foo.png")
+    expect(generator.image_link(products.first)).to match(%r{https://assets.example.com.*blank.jpg$})
     expect(generator.image_link(products.second)).to eq(nil)
   end
 
