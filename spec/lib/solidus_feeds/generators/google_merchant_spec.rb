@@ -18,8 +18,10 @@ RSpec.describe SolidusFeeds::Generators::GoogleMerchant do
   before { allow(Spree::Store).to receive(:default).and_return(store) }
 
   before(:each, with_images: true) do
-    allow(ActionController::Base).to receive(:asset_host).and_return('https://assets.example.com')
-    Spree::Image.create! viewable: products.first.master, attachment_file_name: 'foo.png', id: 234
+    allow(ActiveStorage::Current).to receive(:host).and_return('https://assets.example.com')
+    allow(ActiveStorage::Current).to receive(:url_options).and_return({ host: 'https://assets.example.com' })
+    attachment = File.open(File.join('lib', 'solidus_feeds', 'testing_support', 'fixtures', 'blank.jpg'))
+    products.first.master.images.create!(attachment: attachment)
   end
 
   describe '#call', :with_images do
