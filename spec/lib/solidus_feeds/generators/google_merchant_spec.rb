@@ -18,8 +18,10 @@ RSpec.describe SolidusFeeds::Generators::GoogleMerchant do
   before { allow(Spree::Store).to receive(:default).and_return(store) }
 
   before(:each, with_images: true) do
-    allow(ActionController::Base).to receive(:asset_host).and_return('https://assets.example.com')
-    Spree::Image.create! viewable: products.first.master, attachment_file_name: 'foo.png', id: 234
+    allow(ActiveStorage::Current).to receive(:host).and_return('https://assets.example.com')
+    allow(ActiveStorage::Current).to receive(:url_options).and_return({ host: 'https://assets.example.com' })
+    attachment = File.open(File.join('lib', 'solidus_feeds', 'testing_support', 'fixtures', 'blank.jpg'))
+    products.first.master.images.create!(attachment: attachment)
   end
 
   describe '#call', :with_images do
@@ -44,7 +46,7 @@ RSpec.describe SolidusFeeds::Generators::GoogleMerchant do
           expect_xml_content('//channel/item[1]/g:title').to eq('A product')
           expect_xml_content('//channel/item[1]/g:description').to eq('product description')
           expect_xml_content('//channel/item[1]/g:link').to eq('https://example.com/products/pro1')
-          expect_xml_content('//channel/item[1]/g:image_link').to eq("https://assets.example.com/spree/products/234/large/foo.png") # rubocop:disable Layout/LineLength
+          expect_xml_content('//channel/item[1]/g:image_link').to match(%r{https://assets.example.com.*blank.jpg$})
           expect_xml_content('//channel/item[1]/g:condition').to eq('new')
           expect_xml_content('//channel/item[1]/g:price').to eq('123.45 USD')
           expect_xml_content('//channel/item[1]/g:availability').to eq('out of stock')
@@ -81,7 +83,7 @@ RSpec.describe SolidusFeeds::Generators::GoogleMerchant do
   end
 
   specify '#image_link', :with_images do
-    expect(generator.image_link(products.first)).to eq("https://assets.example.com/spree/products/234/large/foo.png")
+    expect(generator.image_link(products.first)).to match(%r{https://assets.example.com.*blank.jpg$})
     expect(generator.image_link(products.second)).to eq(nil)
   end
 
