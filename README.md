@@ -32,12 +32,14 @@ To register the feed you'd need to add the following code to an initializer such
 `config/initializers/solidus.rb` or better yet `config/initializers/solidus_feeds.rb`
 
 ```ruby
-SolidusFeeds.config.register :google_merchant_shoes do |feed|
-  taxon = Spree::Taxon.find_by(name: "Shoes")
-  products = Spree::Product.available.in_taxon(taxon)
+Rails.application.config.to_prepare do
+  SolidusFeeds.config.register :google_merchant_shoes do |feed|
+    taxon = Spree::Taxon.find_by(name: "Shoes")
+    products = Spree::Product.available.in_taxon(taxon)
 
-  feed.generator = SolidusFeeds::Generators::GoogleMerchant.new(products)
-  feed.publisher = SolidusFeeds::Publishers::S3.new(bucket: "my-bucket", object_key: "foo/bar.xml")
+    feed.generator = SolidusFeeds::Generators::GoogleMerchant.new(products, host: Spree::Store.default.url)
+    feed.publisher = SolidusFeeds::Publishers::S3.new(bucket: "my-bucket", object_key: "foo/bar.xml")
+  end
 end
 ```
 
@@ -46,7 +48,7 @@ recommended to call it in a background job, especially when generating feeds wit
 products.
 
 ```ruby
-SolidusFeeds.find(:google_merchant_shoes).publish
+SolidusFeeds.configuration.find(:google_merchant_shoes).publish
 ```
 
 Having it in a background job makes it easier to:
@@ -117,16 +119,20 @@ need custom configuration on a per-publisher basis.
 ```ruby
 # config/initializers/solidus_feeds.rb
 
-SolidusFeeds.config.register :all_products do |feed|
-  feed.generator = SolidusFeeds::Generators::GoogleMerchant.new(Spree::Product.all)
-  feed.publisher = SolidusFeeds::Publishers::S3.new(
-    bucket: "foo",
-    object_key: "bar/my_feed.xml",
-    client: Aws::S3::Client.new(…), # This is optional - use only if a custom config is needed
-  )
-
-  # visit https://s3.us-east-1.amazonaws.com/foo/bar/my_feed.xml
+Rails.application.config.to_prepare do
+  SolidusFeeds.config.register :all_products do |feed|
+    feed.generator = SolidusFeeds::Generators::GoogleMerchant.new(
+      Spree::Product.all,
+      host: Spree::Store.default.url
+    )
+    feed.publisher = SolidusFeeds::Publishers::S3.new(
+      bucket: "foo",
+      object_key: "bar/my_feed.xml",
+      client: Aws::S3::Client.new(…), # This is optional - use only if a custom config is needed
+    )
+  end
 end
+# visit https://s3.us-east-1.amazonaws.com/foo/bar/my_feed.xml
 ```
 
 ### Static file
@@ -137,11 +143,16 @@ Static File Publisher as such:
 ```ruby
 # config/initializers/solidus_feeds.rb
 
-SolidusFeeds.config.register :all_products do |feed|
-  feed.generator = SolidusFeeds::Generators::GoogleMerchant.new(Spree::Product.all)
-  feed.publisher = SolidusFeeds::Publishers::StaticFile.new(
-    path: Rails.root.join('public/products.xml')
-  )
+Rails.application.config.to_prepare do
+  SolidusFeeds.config.register :all_products do |feed|
+    feed.generator = SolidusFeeds::Generators::GoogleMerchant.new(
+      Spree::Product.all,
+      host: Spree::Store.default.url
+    )
+    feed.publisher = SolidusFeeds::Publishers::StaticFile.new(
+      path: Rails.root.join('public/products.xml')
+    )
+  end
 end
 ```
 
