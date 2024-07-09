@@ -6,11 +6,12 @@ module SolidusFeeds
   module Generators
     # The GoogleMerchant XML feed as described in https://support.google.com/merchants/answer/7052112.
     class GoogleMerchant
-      attr_accessor :products, :host
+      attr_reader :host, :product_scope
 
-      def initialize(products, host:)
-        self.products = products
-        self.host = host
+      def initialize(products = nil, host:, product_scope: :available)
+        @products = products
+        @product_scope = product_scope
+        @host = host
       end
 
       def call(io)
@@ -42,6 +43,10 @@ module SolidusFeeds
             end
           end
         end
+      end
+
+      def products
+        @products || ::Spree::Product.send(product_scope)
       end
 
       def id(product)

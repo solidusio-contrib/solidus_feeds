@@ -131,4 +131,26 @@ RSpec.describe SolidusFeeds::Generators::GoogleMerchant do
 
     expect(generator.google_product_category_id(product)).to eq("123456")
   end
+
+  describe '#products' do
+    context 'with products given' do
+      it 'returns the given products' do
+        expect(generator.products).to eq(products)
+      end
+    end
+
+    context 'without products given' do
+      let(:products) { nil }
+
+      let(:available_product) { create(:base_product) }
+
+      before do
+        create(:base_product, available_on: 1.year.from_now)
+      end
+
+      it 'loads products by product_scope' do
+        expect(generator.products).to eq([available_product])
+      end
+    end
+  end
 end
