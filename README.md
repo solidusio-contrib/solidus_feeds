@@ -1,7 +1,7 @@
 # Solidus Feeds
 
 [![CircleCI](https://circleci.com/gh/solidusio-contrib/solidus_feeds.svg?style=shield)](https://circleci.com/gh/solidusio-contrib/solidus_feeds)
-[![codecov](https://codecov.io/gh/solidusio-contrib/solidus_feeds/branch/master/graph/badge.svg)](https://codecov.io/gh/solidusio-contrib/solidus_feeds)
+[![codecov](https://codecov.io/gh/solidusio-contrib/solidus_feeds/branch/main/graph/badge.svg)](https://codecov.io/gh/solidusio-contrib/solidus_feeds)
 
 <!-- Explain what your extension does. -->
 A framework for producing and publishing feeds on Solidus.
