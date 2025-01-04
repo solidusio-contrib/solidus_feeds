@@ -4,3 +4,5 @@ require 'solidus_dev_support/rake_tasks'
 SolidusDevSupport::RakeTasks.install
 
 task default: 'extension:specs'
+
+require 'bundler/gem_tasks'
